@@ -1,0 +1,61 @@
+{% extends "base.html" %} 
+{% load urlify %}
+
+{% block head_title %} {{ instance.title }} | {{ block.super }} {% endblock head_title %}
+		<style>
+			{% block style %}
+			h1 {
+				color: #6c0ec4
+			}
+			{% endblock style %}
+		</style>
+
+
+{% block content %}
+<div class="col-sm-6 col-sm-offset-3">
+	{% if instance.image %}
+	<img src="{{ instance.image.url }}" alt="" class="img-fluid" />
+	{% endif %}
+
+	<h1>
+		{{ title }}
+		<small>{{ instance.timestamp }}</small>
+	</h1><br>
+	<!-- <p>Author: {{ instance.user }}</p> -->
+	{% if instance.user.get_full_name %}
+	<p>Author: {{ instance.user.get_full_name }}</p>
+	{% endif %}
+	<p><div class="fb-like" data-href="https://developers.facebook.com/docs/plugins/" data-layout="standard" data-action="like"
+	 data-size="small" data-show-faces="true" data-share="true"></div></p>
+	 <hr>
+<!-- {{ request.build_absolute_uri }} gives us the page we're on so we can share it-->
+<!-- {{ share_string }} url encodes text for share-->
+{{ instance.content | truncatechars:20 | urlify }}
+<br>
+<br>
+{{ share_string }}
+<br>
+<br>
+<p>
+	<a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}">
+		Facebook
+	</a><br>
+	<br>
+
+	<a href='https://plus.google.com/share?url={{ request.build_absolute_uri }}'>Google+</a><br>
+	<br>
+
+	<a href="https://twitter.com/home?status={{ instance.content | truncatechars:20 | urlify }}%20{{ request.build_absolute_uri }}">
+		Twitter
+	</a><br><br>
+	<a href="https://www.linkedin.com/shareArticle?mini=true&url={{ request.build_absolute_uri }}&title={{ instance.title }}&summary={{ share_string }}&source={{ request.build_absolute_uri }}">
+		Share on Linkedin
+	</a>
+</p>
+
+
+	<br> {{ instance.content | linebreaks }}
+	<br>
+	<div class="fb-comments" data-href={{ request.build_absolute_uri }} data-numposts="5"></div>
+</div>
+{% endblock content %}
