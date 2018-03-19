@@ -16,7 +16,10 @@
 	<h1>
 		{{ title }}
 	</h1>
-			
+	<form action="" method="GET">
+		<input type="text" name="query" placeholder="Search Posts" value="{{ request.GET.query }}" />
+		<input type="submit" value="Search" />
+	</form>
 	{% for obj in object_list %}
 	<div class="row">
 	<div class="col-sm-12">
@@ -27,6 +30,9 @@
 			<div class="card-body">
 				<!-- <h5 class="card-title"><a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a><small>  {{ obj.timestamp | timesince }} ago</small></h5> -->
 				<h5 class="card-title">
+					{% if obj.draft %}<span style="color: red;">Draft</span>{% endif %}<br>
+					 {% if obj.publish > today %}
+					<span style="color: orange;">Future Post </span> {% endif %}<br>
 					<a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a>
 					<small> {{ obj.publish | timesince }} ago</small>
 				</h5>
@@ -48,7 +54,7 @@
 		<span class="step-links">
 			{% if object_list.has_previous %}
 			<a href="?{{ page_request_variable }}=1">&laquo; first</a>
-			<a href="?{{ page_request_variable }}={{ object_list.previous_page_number }}">previous</a>
+			<a href="?{{ page_request_variable }}={{ object_list.previous_page_number }}{% if request.GET.query %}&query={{request.GET.query}}{% endif %}">previous</a>
 			{% endif %}
 	
 			<span class="current">
@@ -56,7 +62,7 @@
 			</span>
 	
 			{% if object_list.has_next %}
-			<a href="?{{ page_request_variable }}={{ object_list.next_page_number }}">next</a>
+			<a href="?{{ page_request_variable }}={{ object_list.next_page_number }}{% if request.GET.query %}&query={{request.GET.query}}{% endif %}">next</a>
 			<a href="?{{ page_request_variable }}={{ object_list.paginator.num_pages }}">last &raquo;</a>
 			<!-- <a href="?page={{ object_list.paginator.num_pages }}">last &raquo;</a> -->
 			{% endif %}
