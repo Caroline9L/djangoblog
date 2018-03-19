@@ -16,9 +16,16 @@
 	<h1>
 		{{ title }}
 	</h1>
-	<form action="" method="GET">
-		<input type="text" name="query" placeholder="Search Posts" value="{{ request.GET.query }}" />
-		<input type="submit" value="Search" />
+	<form action="" method="GET" class="row">
+		<div class="form-group col-sm-12">
+			<input type="text" name="query" placeholder="Search Posts" value="{{ request.GET.query }}" class="form-control"/>
+			<!-- <span class="input-group-btn"> -->
+				<!-- <input type="submit" value="Search" class="btn btn-default" /> -->
+				<button class="btn btn-default" type="submit">
+					<i class="fa fa-search fa-lg"></i>
+				</button>
+			<!-- </span> -->
+		</div>
 	</form>
 	{% for obj in object_list %}
 	<div class="row">
@@ -27,7 +34,7 @@
 			{% if obj.image %}
 			<img class="card-img-top img-fluid" src="{{ obj.image.url }}" alt="Card image cap">
 			 {% endif %}
-			<div class="card-body">
+			<div class="card-body post-detail-item">
 				<!-- <h5 class="card-title"><a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a><small>  {{ obj.timestamp | timesince }} ago</small></h5> -->
 				<h5 class="card-title">
 					{% if obj.draft %}<span style="color: red;">Draft</span>{% endif %}<br>
@@ -38,9 +45,13 @@
 				</h5>
 
 						
-				<p class="card-text">{% if obj.user.get_full_name %}Author: {{ obj.user.get_full_name }}{% endif %}
-				<br>
-				{{ obj.content | linebreaks | truncatechars:120 }}</p>
+				<p class="card-text">{% if obj.user.get_full_name %}Author: {{ obj.user.get_full_name }}{% endif %}</p>
+				<!-- <p class="card-text content-markdown">
+				{{ obj.content | truncatechars:75 }}</p> -->
+				<p class="card-text">
+					{{ obj.get_markdown | truncatewords_html:5 }}</p>
+
+				<!-- {{ obj.content | linebreaks | truncatechars:75 }}</p> -->
 				<a href="{{ obj.get_absolute_url }}" class="btn btn-primary">Read More</a>
 			</div>
 		</div>
