@@ -18,8 +18,10 @@
 	{% endif %}
 
 	<h1>
-		{{ title }}
-		<small>{{ instance.timestamp }}</small>
+		{{ title }} <br>
+		<!-- <small>{{ instance.timestamp }}</small> -->
+		<small>{% if instance.draft %} <span style="color: red;">Draft</span> {% endif %} {{ instance.publish }}</small>
+
 	</h1><br>
 	<!-- <p>Author: {{ instance.user }}</p> -->
 	{% if instance.user.get_full_name %}

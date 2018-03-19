@@ -25,7 +25,12 @@
 			<img class="card-img-top img-fluid" src="{{ obj.image.url }}" alt="Card image cap">
 			 {% endif %}
 			<div class="card-body">
-				<h5 class="card-title"><a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a><small>  {{ obj.timestamp | timesince }} ago</small></h5>
+				<!-- <h5 class="card-title"><a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a><small>  {{ obj.timestamp | timesince }} ago</small></h5> -->
+				<h5 class="card-title">
+					<a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a>
+					<small> {{ obj.publish | timesince }} ago</small>
+				</h5>
+
 						
 				<p class="card-text">{% if obj.user.get_full_name %}Author: {{ obj.user.get_full_name }}{% endif %}
 				<br>
