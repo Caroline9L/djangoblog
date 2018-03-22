@@ -11,6 +11,9 @@
 			{% endblock style %}
 		</style>
 
+{% block post_detail_link %}
+<li><a href="{{ instance.get_absolute_url }}">// {{ instance.title }}</a></li>
+{% endblock %}
 
 {% block content %}
 <div class="col-sm-6 col-sm-offset-3">
@@ -23,8 +26,12 @@
 		<!-- <small>{{ instance.timestamp }}</small> -->
 		<small>{% if instance.draft %} <span style="color: red;">Draft</span> {% endif %}
 			{{ instance.publish }}</small>
+	</h1>
 
-	</h1><br>
+	<p>Read time: {% if instance.read_time 	<= 1 %} < 1 minute {% else %} {{ instance.read_time }} minutes {% endif %}</p>
+
+	<!-- <p>Read time: {% if instance.read_time|time:"i" <= "01" %} < 1 minute {% elif instance.read_time|time:"i" < "10" %} < 10 minutes {% else %}{{ instance.read_time | time:"i" }} minutes {% endif %}</p> -->
+<!-- <br> -->
 	<!-- <p>Author: {{ instance.user }}</p> -->
 	{% if instance.user.get_full_name %}
 	<p>Author: {{ instance.user.get_full_name }}</p>
@@ -71,17 +78,42 @@
 	<br>
 	<div>
 		<p class="lead">Comments</p>
+		{% if request.user.is_authenticated %}
 		<form method="POST" action="."> {% csrf_token %}
 			{{ comment_form | crispy }}
 			<input type="submit" value="Post Comment" class="btn btn-default">
 		</form>
+		{% else %}
+		<p>You must be signed in to comment.</p>
+		{% endif %}
 		<hr>
 		{% for comment in comments %}
 			{{ comment.content_object }}
-			<blockquote class="blockquote">
+			<blockquote class="blockquote text-right">
 				<p>{{ comment.content }}</p>
-				<footer class="blockquote-footer"> via {{ comment.user }} | {{ comment.timestamp | timesince }} ago</footer>
-				<hr>
+				<footer class="blockquote-footer"> via {{ comment.user }} | {{ comment.timestamp | timesince }} ago | {% if comment.children.count > 0 %} {{ comment.children.count }} Comment{% if comment.children.count > 1 %}s{% endif %} | {% endif %} <a class="comment-reply-btn" href="#" >Reply</a> | <a href="{{ comment.get_absolute_url }}" class="">thread</a></footer>
+
+				<div class="comment-reply">
+					{% for child_comment in comment.children %}
+					<blockquote class="blockquote">
+						<p>{{ child_comment.content }}</p>
+						<footer class="blockquote-footer"> via {{ child_comment.user }} | {{ child_comment.timestamp | timesince }} ago</footer>
+					</blockquote>
+					{% endfor %}
+
+					{% if request.user.is_authenticated %}
+						<form method="POST" action="."> {% csrf_token %} 
+							{{ comment_form | crispy }}
+							<input type="hidden" name="parent_id" value="{{ comment.id }}">
+							<input type="submit" value="Reply" class="btn btn-default">
+						</form>
+					{% else %}
+					<p>You must be signed in to comment.</p>
+					{% endif %}
+
+					<hr>
+				</div>
+
 			</blockquote>
 		{% endfor %}
 		<!-- {{ instance.comment_set.all }} -->

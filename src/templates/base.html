@@ -29,7 +29,21 @@
 	}(document, 'script', 'facebook-jssdk'));</script>
 
 	{% include "messages_display.html" %}
-	<div class="container">
+	<div class="container-fluid">
+		<ol class="breadcrumb col-sm-12">
+			<li class="col-sm-1"><a href="{% url 'posts:list' %}">Home</a></li>
+			{% block post_detail_link %} {% endblock %}
+
+			{% if not request.user.is_authenticated %}
+			<li class="text-right col-sm-10"><a href="{% url 'register' %}">Register</a></li>
+			<li class="text-right col-sm-1"><a href="{% url 'login' %}">Login</a></li>
+			{% else %}
+			<li class="text-right col-sm-11"><a href="{% url 'logout' %}">Logout</a></li>
+			{% endif %}
+
+		</ol>
+		</div>
+		<div class="container">
 		{% block content %}	
 		{% endblock content %}
 	</div>
@@ -37,8 +51,9 @@
 	<!-- <img src="{% static 'img/castle.jpg' %}" alt="image load sample" style="max-width: 50%"> -->
 
 
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
- crossorigin="anonymous"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+ crossorigin="anonymous"></script> -->
+<script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
  crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
@@ -87,8 +102,13 @@ $(document).ready(function(){
 	setTitle(titleInput.val())
 
 	titleInput.keyup(function () {
-		var newTitle = $(this).val()
-		setTitle(newTitle)
+		var newContent = $(this).val()
+		setTitle(newContent)
+	})
+
+	$(".comment-reply-btn").click(function(event) {
+		event.preventDefault();
+		$(this).parent().next(".comment-reply").fadeToggle();
 	})
 
 })
