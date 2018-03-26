@@ -57,7 +57,7 @@ def post_detail(request, slug):
 	if form.is_valid() and request.user.is_authenticated():
 		c_type = form.cleaned_data.get("content_type")
 		content_type = ContentType.objects.get(model=c_type)
-		obj_id = form.cleaned_data.get("object_id")
+		obj_id = form.cleaned_data.get('object_id')
 		content_data = form.cleaned_data.get("content")
 		#parent object
 		parent_obj = None

@@ -45,16 +45,17 @@ def comment_thread(request, id):
 
 	content_object = obj.content_object #parent post
 	content_id = obj.content_object.id
+
 	initial_data = {
 		"content_type": obj.content_type, 
 		"object_id": obj.object_id,
+		# "parent_obj": None
 	}
-
 	form = CommentForm(request.POST or None, initial=initial_data)
 	if form.is_valid() and request.user.is_authenticated():
 		c_type = form.cleaned_data.get("content_type")
 		content_type = ContentType.objects.get(model=c_type)
-		obj_id = form.cleaned_data.get("object_id")
+		obj_id = form.cleaned_data.get('object_id')
 		content_data = form.cleaned_data.get("content")
 		#parent object
 		parent_obj = None
@@ -76,6 +77,7 @@ def comment_thread(request, id):
 			parent = parent_obj,
 		)
 		return HttpResponseRedirect(new_comment.content_object.get_absolute_url())
+		
 	context = {
 		"comment": obj,
 		"form": form,
