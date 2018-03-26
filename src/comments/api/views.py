@@ -3,6 +3,7 @@ from rest_framework.filters import (
 	SearchFilter,
 	OrderingFilter,
 	)
+from rest_framework.mixins import DestroyModelMixin, UpdateModelMixin
 from rest_framework.generics import (
 	CreateAPIView,
 	DestroyAPIView,
@@ -23,15 +24,16 @@ from posts.api.pagination import PostLimitOffsetPagination, PostPageNumberPagina
 
 from comments.models import Comment
 from .serializers import (
-	CommentSerializer, 
+	CommentListSerializer, 
 	CommentDetailSerializer,
+	# CommentEditSerializer,
 	create_comment_serializer
 	)
 
 class CommentCreateAPIView(CreateAPIView):
 	queryset = Comment.objects.all()
 	#serializer_class = PostCreateUpdateSerializer
-	permission_classes = [IsAuthenticated]
+	# permission_classes = [IsAuthenticated]
 
 	def get_serializer_class(self):
 		model_type = self.request.GET.get("type")
@@ -47,35 +49,34 @@ class CommentCreateAPIView(CreateAPIView):
 	# def perform_create(self, serializer):
 	# 	serializer.save(user=self.request.user)
 
-class CommentDetailAPIView(RetrieveAPIView):
-	queryset = Comment.objects.all() #will only work for parent comments
+# class CommentEditAPIView(RetrieveAPIView):
+# 	queryset = Comment.objects.all() #will only work for parent comments
+# 	serializer_class = CommentDetailSerializer
+# 	lookup_field = 'pk' #this is default, otherwise needs to pass to urls
+
+
+class CommentDetailAPIView(DestroyModelMixin, UpdateModelMixin, RetrieveAPIView):
+	queryset = Comment.objects.filter(id__gte=0)
 	serializer_class = CommentDetailSerializer
-	lookup_field = 'pk' #this is default, otherwise needs to pass to urls
+	# permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+	permission_classes = [IsOwnerOrReadOnly]
 
-# class PostUpdateAPIView(RetrieveUpdateAPIView): #this view will prepopulate fields and display data to edit
-# 	queryset = Post.objects.all()
-# 	serializer_class = PostCreateUpdateSerializer
-# 	lookup_field = 'slug'
-# 	permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+	def put(self, request, *args, **kwargs):
+		return self.update(request, *args, **kwargs)
 
-# 	def perform_update(self, serializer):
-# 		serializer.save(user=self.request.user)
-
+	def delete(self, request, *args, **kwargs):
+		return self.destroy(request, *args, **kwargs)
 	
-
-# class PostDeleteAPIView(DestroyAPIView):
-# 	queryset = Post.objects.all()
-# 	serializer_class = PostDetailSerializer
-# 	lookup_field = 'slug'
-
 class CommentListAPIView(ListAPIView):
-	serializer_class = CommentSerializer
+	serializer_class = CommentListSerializer
+	permission_classes = [AllowAny]
 	filter_backends = [SearchFilter, OrderingFilter]
 	search_fields = ["content", "user__first_name"]
 	pagination_class = PostPageNumberPagination
 
 	def get_queryset(self, *args, **kwargs):
-		queryset_list = Comment.objects.all()
+		# queryset_list = Comment.objects.all()
+		queryset_list = Comment.objects.filter(id__gte=0)
 		query = self.request.GET.get("q")
 		if query:
 			queryset_list = queryset_list.filter(

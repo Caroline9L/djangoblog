@@ -5,11 +5,11 @@ from rest_framework.pagination import (
 
 
 class PostLimitOffsetPagination(LimitOffsetPagination): #custom class to override default settings
-	default_limit = 2
+	default_limit = 10
 	max_limit = 10
 
 class PostPageNumberPagination(PageNumberPagination):
-	page_size = 2
+	page_size = 20
 
 
 

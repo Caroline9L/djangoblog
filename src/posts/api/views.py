@@ -34,7 +34,7 @@ from .serializers import (
 class PostCreateAPIView(CreateAPIView):
 	queryset = Post.objects.all()
 	serializer_class = PostCreateUpdateSerializer
-	permission_classes = [IsAuthenticated]
+	# permission_classes = [IsAuthenticated]
 
 	def perform_create(self, serializer):
 		serializer.save(user=self.request.user) #self.request is class-based way to get request, rather than just passing request as a param
@@ -43,12 +43,14 @@ class PostDetailAPIView(RetrieveAPIView):
 	queryset = Post.objects.all()
 	serializer_class = PostDetailSerializer
 	lookup_field = 'slug'
+	permission_classes = [AllowAny]
 
 class PostUpdateAPIView(RetrieveUpdateAPIView): #this view will prepopulate fields and display data to edit
 	queryset = Post.objects.all()
 	serializer_class = PostCreateUpdateSerializer
 	lookup_field = 'slug'
-	permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+	# permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+	permission_classes = [IsOwnerOrReadOnly]
 
 	def perform_update(self, serializer):
 		serializer.save(user=self.request.user)
@@ -59,10 +61,12 @@ class PostDeleteAPIView(DestroyAPIView):
 	queryset = Post.objects.all()
 	serializer_class = PostDetailSerializer
 	lookup_field = 'slug'
+	permission_classes = [IsOwnerOrReadOnly]
 
 class PostListAPIView(ListAPIView):
 	# queryset = Post.objects.all()
 	serializer_class = PostListSerializer
+	permission_classes = [AllowAny]
 	filter_backends = [SearchFilter, OrderingFilter] #similar to list filter in admin
 	search_fields = ['title', 'content', 'user__first_name'] #similar to admin
 	# pagination_class = LimitOffsetPagination  #limit is # to return, offset starts results after #(?)

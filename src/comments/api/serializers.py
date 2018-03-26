@@ -9,6 +9,7 @@ from rest_framework.serializers import (
 	ValidationError
 	)
 
+from accounts.api.serializers import UserDetailSerializer
 from comments.models import Comment
 
 User = get_user_model()
@@ -83,29 +84,71 @@ class CommentSerializer(ModelSerializer):
 			return obj.children().count()
 		return 0
 
+class CommentListSerializer(ModelSerializer):
+	url = HyperlinkedIdentityField(
+		view_name='comments-api:thread')
+	reply_count = SerializerMethodField()
+	class Meta:
+		model = Comment
+		fields = [
+			"url",
+			"id",
+			# "content_type",
+			# "object_id",
+			# "parent",
+			"content",
+			"reply_count",
+			"timestamp"
+		]
+
+	def get_reply_count(self, obj):
+		if obj.is_parent:
+			return obj.children().count()
+		return 0
+
+
+
 class CommentChildSerializer(ModelSerializer):
+	user = UserDetailSerializer(read_only=True)
 	class Meta:
 		model = Comment
 		fields = [
 			"id",
+			"user",
 			"content",
 			"timestamp"
 		]
 
 class CommentDetailSerializer(ModelSerializer):
+	user = UserDetailSerializer(read_only=True)
 	reply_count = SerializerMethodField()
+	content_object_url = SerializerMethodField()
 	replies = SerializerMethodField()
 	class Meta:
 		model = Comment
 		fields = [
 			"id",
-			"content_type",
-			"object_id",
+			"user",
+			# "content_type",
+			# "object_id",
 			"content",
 			"reply_count",
 			"replies",
 			"timestamp",
+			"content_object_url"
 		]
+		read_only_fields = [
+			# 'content_type',
+			# 'object_id',
+			'reply_count',
+			'replies'
+		]
+
+	def get_content_object_url(self, obj):
+		try: 
+			return obj.content_object.get_api_url()
+		except:
+			return None
 
 	def get_replies(self, obj):
 		if obj.is_parent:
@@ -117,3 +160,11 @@ class CommentDetailSerializer(ModelSerializer):
 			return obj.children().count()
 		return 0
 
+# class CommentEditSerializer(ModelSerializer):
+# 	class Meta:
+# 		model = Comment
+# 		fields = [
+# 			"id",
+# 			"content",
+# 			"timestamp",
+# 		]
