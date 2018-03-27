@@ -1,0 +1,21 @@
+h1 {
+	color: #c40e0e
+}
+
+.wmd-panel {
+	margin-left: 0% !important;
+	margin-right: 0% !important;
+}
+
+blockquote p{
+	margin-left: 5px !important;
+	border-left: 2px solid grey !important;
+}
+blockquote footer{
+	margin-left: 5px !important;
+	border-left: 2px solid grey !important;
+}
+
+.comment-reply {
+	display: none;
+}
