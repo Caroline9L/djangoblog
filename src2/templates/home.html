@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block head_title %}Welcome | {{ block.super }} {% endblock %}
+
+<style>
+{% block style %}
+p {
+	color: red
+}
+{% endblock %}
+</style>
+
+{% block jumbotron %}
+	<div class="jumbotron">
+			<div class="row">
+				<div class="col-sm-8">
+					<!-- <div class="jumbotron"> -->
+						<div class="container">
+							<h1 class="display-3">Hello, world!</h1>
+							<p class="lead text-align-center">This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and
+								three supporting pieces of content. Use it as a starting point to create something more unique.</p>
+							<p>
+								<a class="btn btn-primary btn-lg" href="#" role="button">Join Us »</a>
+							</p>
+						</div>
+					</div>
+				<!-- </div> -->
+				<div class="col-sm-4">
+					<img src="" alt="" />
+				</div>
+			</div>
+		</div>
+
+
+{% endblock %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-sm-3 offset-sm-2 mb-5">
+			<h3>
+				{{ title }}
+			</h3>
+
+			<form action="" method="POST">{% csrf_token %}
+
+				{{ form|crispy }} <!--#.as_p-->
+				<input class="btn btn-primary" type="submit" value="Sign Up">
+
+			</form>
+		</div>
+	</div>
+{% endblock %}
